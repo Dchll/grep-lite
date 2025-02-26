@@ -1,5 +1,8 @@
 use clap::Parser;
 use regex::Regex;
+use std::fs::File;
+use std::io::BufReader;
+use std::io::prelude::*;
 
 #[derive(Parser, Debug)]
 #[command(
@@ -15,18 +18,18 @@ struct Args {
 fn main() {
     let args = Args::parse();
     let pattern = args.pattern;
-
     let re = Regex::new(pattern.as_str()).unwrap();
 
-    let quote = "Every face, every shop, bedroom window, public-house, and 
-dark square is a picture feverishly turned--in search of what?
-it is the same with books. What do we seek through millions of pages?";
+    let f = File::open("README.md").unwrap();
+    let mut reader = BufReader::new(f);
 
-    for line in quote.lines() {
-        let contains_substring = re.find(line);
-        match contains_substring {
-            None => (),
-            Some(_) => println!("{}", line),
+    for line_ in reader.lines() {
+        if let Ok(line) = line_ {
+            let contains_substring = re.find(&line);
+            match contains_substring {
+                None => (),
+                Some(_) => println!("{} ({} bytes)", line, line.len()),
+            }
         }
     }
 }
