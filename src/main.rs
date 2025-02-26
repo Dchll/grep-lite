@@ -13,15 +13,18 @@ use std::io::prelude::*;
 struct Args {
     #[arg(help = "The pattern to search for")]
     pattern: String,
+    #[arg(help = "File to search")]
+    input: String,
 }
 
 fn main() {
     let args = Args::parse();
     let pattern = args.pattern;
-    let re = Regex::new(pattern.as_str()).unwrap();
+    let input = args.input;
 
-    let f = File::open("README.md").unwrap();
-    let mut reader = BufReader::new(f);
+    let re = Regex::new(pattern.as_str()).unwrap();
+    let f = File::open(input).unwrap();
+    let reader = BufReader::new(f);
 
     for line_ in reader.lines() {
         if let Ok(line) = line_ {
